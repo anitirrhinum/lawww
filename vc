@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LENGTH 100000
+
+void printArticle(FILE *file, int startArticle);
+
+int main() {
+    FILE *file;
+    char filename[] = "bub.txt";
+    int startArticle;
+
+    printf("조항의 번호를 입력하세요: ");
+    scanf("%d", &startArticle);
+
+    // 파일 열기
+    file = fopen(filename, "r, ccs=UTF8");
+    if (file == NULL) {
+        printf("파일을 열 수 없습니다.\n");
+        return 1;
+    }
+
+    // 조항 출력
+    printArticle(file, startArticle);
+
+    // 파일 닫기
+    fclose(file);
+
+    return 0;
+}
+
+void printArticle(FILE *file, int startArticle) {
+    char line[MAX_LENGTH];
+    int articleFound = 0;
+    int currentArticle = 0;
+
+    // 조항 검색
+    while (fgets(line, MAX_LENGTH, file) != NULL) {
+        // 조항 시작점을 찾으면 출력 플래그 활성화
+        if (strstr(line, "제 ") != NULL) {
+            currentArticle = atoi(line + 2); // "제" 다음의 숫자 추출
+            articleFound++;
+        }
+
+        // 조항 내용 출력
+        if (articleFound >= startArticle) {  // 수정: 조항 번호 이상인 경우 출력
+            printf("%s", line);
+
+            // 조항의 끝을 확인하여 출력 종료
+            if (strstr(line, "제 ") != NULL) {
+                break;
+            }
+        }
+    }
